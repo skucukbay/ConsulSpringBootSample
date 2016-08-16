@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <springProperty scope="context" name="logPath" source="logging.path"/>
+    <springProperty scope="context" name="fileName" source="logging.file"/>
+    <!--<include resource="org/springframework/boot/logging/logback/base.xml" />-->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+    <appender name="APP_LOGGER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${logPath}/${fileName}</File>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${logPath}/${fileName}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- keep 30 days' history -->
+            <maxHistory>30</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d %5p | %t | %c | %m %n</pattern>
+        </layout>
+    </appender>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d %5p | %t | %c | %m %n</pattern>
+        </encoder>
+    </appender>
+
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+
+    </root>
+
+<!--Profile based logging level sample usage-->
+    <springProfile name="dev">
+
+        <logger name="com.example" level="DEBUG">
+            <appender-ref ref="APP_LOGGER" />
+        </logger>
+
+    </springProfile>
+
+
+    <springProfile name="staging">
+        <logger name="com.example" level="DEBUG">
+            <appender-ref ref="APP_LOGGER" />
+        </logger>
+    </springProfile>
+
+    <springProfile name="prod">
+        <logger name="com.example" level="DEBUG">
+            <appender-ref ref="APP_LOGGER" />
+        </logger>
+    </springProfile>
+</configuration>
