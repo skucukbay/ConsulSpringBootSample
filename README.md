@@ -79,7 +79,11 @@
         spring.cloud.consul.port = 8500
         #spring.cloud.consul.discovery.healthCheckPath = /consul/health
         spring.cloud.consul.discovery.healthCheckInterval = 100s
-  - At the startup, our service can connect to consul agent with given parameters in above.       
+  - At the startup, our service can connect to consul agent with given parameters in above. You can check our service status from UI portal.
+  First, our service is listed in failing list, after first health check our service will move to passing list if everything goes good:)
+   
+   
+     
    
  
  
