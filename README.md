@@ -73,6 +73,27 @@
   - Then, we need to force spring boot application to act as a service discovery. As you understand, springboot simplifies configuration tasks.
    To enable consul discovery, just we need to mark root class with `@EnableDiscoveryClient`.
    
+   `
+      	
+    @EnableDiscoveryClient
+    @SpringBootApplication
+    public class DemoProjectApplication /*extends SpringBootServletInitializer*/{
+    	private static Logger logger = LoggerFactory.getLogger(DemoProjectApplication.class);
+    
+    
+    	@PostConstruct
+    	public void logSomething() {
+    		logger.debug("Sample Debug Message");
+    	}
+    
+    	public static void main(String[] args) {
+    
+    
+    		SpringApplication.run(DemoProjectApplication.class, args);
+    
+    	}
+    }`
+   
   - To connect consul agent, we need to define basic information such as host and port.    
    
         spring.cloud.consul.host = 127.0.0.1
@@ -81,8 +102,54 @@
         spring.cloud.consul.discovery.healthCheckInterval = 100s
   - At the startup, our service can connect to consul agent with given parameters in above. You can check our service status from UI portal.
   First, our service is listed in failing list, after first health check our service will move to passing list if everything goes good:)
+ 
+### Integration Consul-Template And HAProxy
    
+  - You can easly queries a Consul instance and updates/populates any number of specified templates on the file system via consul-template daemon.
+  - Also, you can run commands when the update process completes (for example $ service restart haproxy). We use this ability to restart HAProxy daemon when any changes happen in the available service list in HAProxy configuration. 
+  - In the normal case, to add a new service to HAProxy loadbalancer, you must edit the balancer config manually, then you must the restart related daemon. By this setup, this process performed automatically.
+    - First, we need to prepare a [template](https://github.com/hashicorp/consul-template#templating-language) for HAProxy config. 
    
+`
+   
+        global
+                log /dev/log   local0
+                log 127.0.0.1   local1 notice
+                maxconn 4096
+                user haproxy
+                group haproxy
+                daemon
+        
+        defaults
+                log     global
+                mode    http
+                option  httplog
+                option  dontlognull
+                retries 3
+                option redispatch
+                maxconn 2000
+                contimeout     5000
+                clitimeout     50000
+                srvtimeout     50000
+        
+        frontend webapp1
+                 bind *:4646
+                 default_backend webapp1-servers
+        
+        
+        backend webapp1-servers
+                 balance roundrobin
+                 mode http
+        {{range service "consulTryProject"}}
+        server {{.Node}} {{.Address}}:{{.Port}}{{end}}
+`
+    
+   In the above config, "**consulTryProject**" is the name of the application which is set in the application-dev.properties. Consul template is querying consul agent with application name.
+   
+   - To run consul template, following command must be run; First we need to [install](https://github.com/hashicorp/consul-template#consul-template) it :)
+`   sudo ./consul-template -consul 127.0.0.1:8500 -template haproxy.ctmpl:ha.cfg
+`   
+   - 
      
    
  
