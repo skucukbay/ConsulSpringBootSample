@@ -151,6 +151,8 @@
 `   
    
    ` 
+
+
    sample **ha.cfg** file
    
        global
