@@ -153,8 +153,8 @@
     
    sample **ha.cfg** file
    
-   `
-   
+`
+
        global
                log /dev/log   local0
                log 127.0.0.1   local1 notice
