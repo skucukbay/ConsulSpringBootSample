@@ -150,8 +150,10 @@
 `   sudo ./consul-template -consul 127.0.0.1:8500 -template haproxy.ctmpl:ha.cfg
 `   
  
-   ` 
+    
    sample **ha.cfg** file
+   
+   `
    
        global
                log /dev/log   local0
