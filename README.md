@@ -149,10 +149,8 @@
    - To run consul template, following command must be run; First we need to [install](https://github.com/hashicorp/consul-template#consul-template) it :)
 `   sudo ./consul-template -consul 127.0.0.1:8500 -template haproxy.ctmpl:ha.cfg
 `   
-   
+ 
    ` 
-
-
    sample **ha.cfg** file
    
        global
@@ -183,18 +181,4 @@
        backend webapp1-servers
                 balance roundrobin
                 mode http
-
-
-   `
-   
-     
-   
- 
- 
-    
-    
-    
- 
- 
-   
-    
+`
